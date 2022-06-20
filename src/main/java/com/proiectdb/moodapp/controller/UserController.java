@@ -1,53 +1,55 @@
 package com.proiectdb.moodapp.controller;
 
+import com.proiectdb.moodapp.authentication.ConfirmationToken;
+import com.proiectdb.moodapp.authentication.ConfirmationTokenService;
 import com.proiectdb.moodapp.model.User;
-import com.proiectdb.moodapp.model.dto.UserDto;
 import com.proiectdb.moodapp.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.util.Optional;
 
+@RestController
 @AllArgsConstructor
-@Controller
 public class UserController {
+
     private final UserService userService;
 
-    @GetMapping("/users")
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    private final ConfirmationTokenService confirmationTokenService;
+
+    @GetMapping("/sign-in")
+    String signIn() {
+
+        return "sign-in";
     }
 
-    @GetMapping("users/{id}")
-    public User getById(@PathVariable Long id) {
-        return userService.getById(id);
+    @GetMapping("/sign-up")
+    String signUpPage(User user) {
+
+        return "sign-up";
     }
 
-    @PostMapping("/users")
-    public User createUser(@RequestBody User user) {
-        userService.insert(user);
-        return user;
+    @PostMapping("/sign-up")
+    String signUp(User user) {
+
+        userService.signUpUser(user);
+
+        return "redirect:/sign-in";
     }
 
-    @PostMapping("/users/update")
-    public User updateUser(@RequestBody User user) {
-        userService.update(user);
-        return user;
+    @GetMapping("/sign-up/confirm")
+    String confirmMail(@RequestParam("token") String token) {
+
+        Optional<ConfirmationToken> optionalConfirmationToken = confirmationTokenService.findConfirmationTokenByToken(token);
+
+        optionalConfirmationToken.ifPresent(userService::confirmUser);
+
+        return "redirect:/sign-in";
     }
 
-    @DeleteMapping("/users/deleted/{id}")
-    public void deleteUser(@RequestBody User user) {
-        userService.delete(user);
-    }
-
-    @GetMapping("/user/registration")
-    public String showRegistrationForm(WebRequest request, Model model) {
-        UserDto userDto = new UserDto();
-        model.addAttribute("user", userDto);
-        return "registration";
-    }
 }
 
