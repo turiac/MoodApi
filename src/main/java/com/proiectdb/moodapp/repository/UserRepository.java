@@ -1,13 +1,2 @@
-package com.proiectdb.moodapp.repository;
-
-import com.proiectdb.moodapp.model.User;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
-
-@Repository
-public interface UserRepository extends CrudRepository<User, Long> {
-
-    Optional<User> findByEmail(String email);
+package com.proiectdb.moodapp.repository;public interface UserRepository {
 }

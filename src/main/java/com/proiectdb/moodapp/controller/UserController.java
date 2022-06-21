@@ -1,55 +1,50 @@
 package com.proiectdb.moodapp.controller;
 
-import com.proiectdb.moodapp.authentication.ConfirmationToken;
-import com.proiectdb.moodapp.authentication.ConfirmationTokenService;
+import java.util.List;
+
 import com.proiectdb.moodapp.model.User;
-import com.proiectdb.moodapp.service.UserService;
-import lombok.AllArgsConstructor;
+import com.proiectdb.moodapp.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Optional;
+@Controller
+public class AppController {
 
-@RestController
-@AllArgsConstructor
-public class UserController {
+    @Autowired
+    private UserRepository userRepo;
 
-    private final UserService userService;
-
-    private final ConfirmationTokenService confirmationTokenService;
-
-    @GetMapping("/sign-in")
-    String signIn() {
-
-        return "sign-in";
+    @GetMapping("")
+    public String viewHomePage() {
+        return "index";
     }
 
-    @GetMapping("/sign-up")
-    String signUpPage(User user) {
+    @GetMapping("/register")
+    public String showRegistrationForm(Model model) {
+        model.addAttribute("user", new User());
 
-        return "sign-up";
+        return "signup_form";
     }
 
-    @PostMapping("/sign-up")
-    String signUp(User user) {
+    @PostMapping("/process_register")
+    public String processRegister(User user) {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encodedPassword);
 
-        userService.signUpUser(user);
+        userRepo.save(user);
 
-        return "redirect:/sign-in";
+        return "register_success";
     }
 
-    @GetMapping("/sign-up/confirm")
-    String confirmMail(@RequestParam("token") String token) {
+    @GetMapping("/users")
+    public String listUsers(Model model) {
+        List<User> listUsers = userRepo.findAll();
+        model.addAttribute("listUsers", listUsers);
 
-        Optional<ConfirmationToken> optionalConfirmationToken = confirmationTokenService.findConfirmationTokenByToken(token);
-
-        optionalConfirmationToken.ifPresent(userService::confirmUser);
-
-        return "redirect:/sign-in";
+        return "users";
     }
-
 }
-
