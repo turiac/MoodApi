@@ -1,4 +1,4 @@
-package com.proiectdb.moodapp.model;
+/* package com.proiectdb.moodapp.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,9 +29,9 @@ public class Manager {
 
     @OneToMany(mappedBy = "manager")
     private List<User> users;
-
-
-
-
-
 }
+*/
+
+
+
+

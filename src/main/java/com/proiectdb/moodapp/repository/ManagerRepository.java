@@ -1,4 +1,4 @@
-package com.proiectdb.moodapp.repository;
+/* package com.proiectdb.moodapp.repository;
 
 import com.proiectdb.moodapp.model.Manager;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,4 +12,4 @@ public interface ManagerRepository extends JpaRepository<Manager, Long> {
     Manager findByManagerId(Long managerId);
     List<Manager> findAll();
 }
-
+*/

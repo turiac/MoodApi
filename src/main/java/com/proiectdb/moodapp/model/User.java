@@ -1,73 +1,86 @@
 package com.proiectdb.moodapp.model;
 
-import lombok.*;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import java.util.Collection;
-import java.util.Collections;
+@Entity
+@Table(name = "users")
+public class User {
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Setter
-@Getter
-@Builder
-@EqualsAndHashCode
-@Entity(name = "Users")
-public class User implements UserDetails {
     @Id
-    @GeneratedValue
-    private Long userId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private String name;
+    @Column(nullable = false, unique = true, length = 45)
     private String email;
+
+    @Column(nullable = false, length = 64)
     private String password;
-    @Builder.Default
-    private UserRole userRole = UserRole.USER;
 
-    @Builder.Default
-    private Boolean locked = false;
+    @Column(name = "first_name", nullable = false, length = 20)
+    private String firstName;
 
-    @Builder.Default
-    private Boolean enabled = false;
+    @Column(name = "last_name", nullable = false, length = 20)
+    private String lastName;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
 
-        final SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(userRole.name());
-        return Collections.singletonList(simpleGrantedAuthority);
+    public Long getId() {
+        return id;
     }
 
-    @Override
-    public String getUsername() {
-        return null;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return false;
+    public String getEmail() {
+        return email;
     }
 
-    @Override
-    public boolean isAccountNonLocked() {
-        return false;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return false;
+    public String getPassword() {
+        return password;
     }
 
-    @Override
-    public boolean isEnabled() {
-        return false;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    @ManyToOne
-    private Manager manager;
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    public void addRole(Role role) {
+        this.roles.add(role);
+    }
 }
