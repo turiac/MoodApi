@@ -24,6 +24,8 @@ public class User {
     @Column(name = "last_name", nullable = false, length = 20)
     private String lastName;
 
+    @ManyToOne
+    private Manager manager;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_roles",
@@ -74,6 +76,14 @@ public class User {
 
     public Set<Role> getRoles() {
         return roles;
+    }
+
+    public Manager getManager() {
+        return manager;
+    }
+
+    public void setManager(Manager manager) {
+        this.manager = manager;
     }
 
     public void setRoles(Set<Role> roles) {

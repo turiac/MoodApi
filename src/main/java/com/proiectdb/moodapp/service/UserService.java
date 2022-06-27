@@ -17,7 +17,10 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
-    RoleRepository roleRepository;
+    private ManagerService managerService;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Autowired PasswordEncoder passwordEncoder;
 
@@ -42,6 +45,20 @@ public class UserService {
 
     public void save(User user) {
         encodePassword(user);
+        userRepository.save(user);
+    }
+
+    public void saveManager(User user) {
+        Role roleManager = roleRepository.findByName("Manager");
+        user.addRole(roleManager);
+        encodePassword(user);
+        userRepository.save(user);
+    }
+
+    public void setManagerId(User user, Long managerId) {
+        Role roleEmployee = roleRepository.findByName("employee");
+        user.addRole(roleEmployee);
+        user.setManager(managerService.get(managerId));
         userRepository.save(user);
     }
 

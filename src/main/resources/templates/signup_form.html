@@ -46,6 +46,21 @@
         </div>
       </div>
 
+      <div class="form-group row">
+        <tr>
+        <label class="col-4 col-form-label">Manager Name: </label>
+        <td>
+          <select name="manager" id="manager" class="form-control">
+
+                  <option th:each="manager : ${listManagers}"
+                          th:value="${manager.id}"
+                          th:text="${manager.firstName}">
+          </option>
+          </select>
+        </td>
+        </tr>
+      </div>
+
       <div>
         <button type="submit" class="btn btn-primary">Sign Up</button>
       </div>
