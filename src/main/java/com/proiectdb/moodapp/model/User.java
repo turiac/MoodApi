@@ -2,6 +2,7 @@ package com.proiectdb.moodapp.model;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -23,6 +24,9 @@ public class User {
 
     @Column(name = "last_name", nullable = false, length = 20)
     private String lastName;
+
+    @OneToMany
+    private List<Mood> moods;
 
     @ManyToOne
     private Manager manager;
