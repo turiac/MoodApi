@@ -35,7 +35,7 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User get(Long id) {
+    public User getById(Long id) {
         return userRepository.findById(id).get();
     }
 
@@ -65,5 +65,10 @@ public class UserService {
     private void encodePassword(User user) {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
+    }
+
+    public void updateUser(Long id, User user) {
+        user.setId(id);
+        userRepository.save(user);
     }
 }

@@ -30,13 +30,13 @@ public class User {
 
     @ManyToOne
     private Manager manager;
-    @ManyToMany(fetch = FetchType.EAGER)
+   /* @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private Set<Role> roles = new HashSet<>();
+    private Set<Role> roles = new HashSet<>();*/
 
     public Long getId() {
         return id;
@@ -94,7 +94,7 @@ public class User {
         this.roles = roles;
     }
 
-    public void addRole(Role role) {
-        this.roles.add(role);
-    }
+   // public void addRole(Role role) {
+     //   this.roles.add(role);
+   // }
 }

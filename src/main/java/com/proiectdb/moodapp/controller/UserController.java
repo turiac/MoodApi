@@ -1,26 +1,39 @@
 package com.proiectdb.moodapp.controller;
 
+import java.io.IOException;
 import java.util.List;
 
+import com.proiectdb.moodapp.model.DTO.UserDTO;
 import com.proiectdb.moodapp.model.Manager;
 import com.proiectdb.moodapp.model.Role;
 import com.proiectdb.moodapp.model.User;
 import com.proiectdb.moodapp.service.ManagerService;
 import com.proiectdb.moodapp.service.UserService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+
 @Controller
 public class UserController {
 
     @Autowired
-    private UserService userService;
+    private ModelMapper modelMapper;
 
-    @Autowired
-    private ManagerService managerService;
+    private final UserService userService;
+
+
+    private final ManagerService managerService;
+
+    public UserController(UserService userService, ManagerService managerService) {
+        this.userService = userService;
+        this.managerService = managerService;
+    }
 
     @GetMapping("")
     public String viewHomePage() {
@@ -48,21 +61,24 @@ public class UserController {
         return "register_success";
     }
 
-    @GetMapping("/users")
-    public String listUsers(Model model) {
-        List<User> listUsers = userService.listAll();
-        model.addAttribute("listUsers", listUsers);
-
-        return "users";
+    @GetMapping("/list_users")
+    public List<UserDTO> listAllUsers() {
+        return userService.listAll().stream().map(user -> modelMapper.map(user, UserDTO.class)).collect(java.util.stream.Collectors.toList());
     }
 
-    @GetMapping("/users/edit/{id}")
-    public String editUser(@PathVariable("id") Long id, Model model) {
-        User user = userService.get(id);
-        List<Role> listRoles = userService.listRoles();
-        model.addAttribute("user", user);
-        model.addAttribute("listRoles", listRoles);
-        return "user_form";
+    @GetMapping("/user/{id}")
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
+        User user = userService.getById(id);
+        UserDTO userResponse = modelMapper.map(user, UserDTO.class);
+        return ResponseEntity.ok().body(userResponse);
+    }
+
+    @PutMapping("/user/edit/{id}")
+    public Integer editUser(@PathVariable Long id, @RequestBody UserDTO userDTO, HttpServletResponse response) throws IOException {
+        User userRequest = modelMapper.map(userDTO, User.class);
+        userService.updateUser(id, userRequest);
+        response.setStatus(201);
+        return response.getStatus();
     }
 
     @PostMapping("/users/save")
